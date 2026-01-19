@@ -1,0 +1,117 @@
+// Prisma Schema for 装修公司官网
+// 装修公司官网数据模型
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// 管理员用户表
+model Admin {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String   // 存储哈希后的密码
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admins")
+}
+
+// 案例表
+model Case {
+  id          String     @id @default(cuid())
+  title       String
+  location    String
+  style       CaseStyle
+  area        Int        // 面积(㎡)
+  duration    Int        // 工期(天)
+  price       Float      // 价格(万元)
+  images      String[]   // 图片URL数组
+  description String     @db.Text
+  testimonial String     @db.Text // 业主感言
+  foremanName String     // 施工队长姓名
+  foremanPhone String    // 施工队长电话
+  stage       String     // 装修阶段
+  featured    Boolean    @default(false) // 是否推荐
+  status      CaseStatus @default(draft)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("cases")
+  @@index([status, featured])
+}
+
+// 潜客表
+model Lead {
+  id           String           @id @default(cuid())
+  name         String
+  phone        String           // 手机号
+  propertyType PropertyType
+  area         Int              // 面积(㎡)
+  budget       Float            // 预算(万元)
+  styles       CaseStyle[]      // 风格偏好(多选)
+  stage        RenovationStage
+  timeline     Timeline
+  score        Int              // 自动评分(50-100)
+  status       LeadStatus       @default(pending)
+  submittedAt  DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@map("leads")
+  @@index([score, submittedAt])
+  @@index([status])
+}
+
+// 枚举类型
+
+enum CaseStyle {
+  modern      // 现代
+  nordic      // 北欧
+  industrial  // 工业
+  wabisabi    // 侘寂
+  luxury      // 轻奢
+  minimalist  // 极简
+  chinese     // 中式
+  european    // 欧式
+}
+
+enum CaseStatus {
+  published
+  draft
+}
+
+enum PropertyType {
+  residential  // 住宅
+  apartment    // 公寓
+  villa        // 别墅
+  commercial   // 商业空间
+  other        // 其他
+}
+
+enum RenovationStage {
+  design_only          // 仅设计
+  design_construction  // 设计+施工
+  construction_only    // 仅施工
+  supervision_only     // 仅监理
+}
+
+enum Timeline {
+  within_1_month    // 1个月内
+  within_1_3_months // 1-3个月
+  within_3_6_months // 3-6个月
+  over_6_months     // 6个月以上
+  no_plan           // 暂无计划
+}
+
+enum LeadStatus {
+  pending    // 待跟进
+  contacted  // 已联系
+  scheduled  // 已预约
+  closed     // 已成交
+  abandoned  // 已放弃
+}
+

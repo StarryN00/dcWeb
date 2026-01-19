@@ -1,0 +1,5 @@
+IP：139.196.28.125
+用户名：root
+私钥：目录下AIservier.pem
+端口：22
+git：git@github.com:StarryN00/dcWeb.git
