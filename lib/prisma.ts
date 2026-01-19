@@ -6,13 +6,12 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
+// 从环境变量解析数据库连接信息
+const databaseUrl = process.env.DATABASE_URL || 'postgresql://dcweb_user:dcweb_password_2024@localhost:5432/dcweb_db?schema=public';
+
 // 创建 PostgreSQL 连接池
 const pool = new Pool({
-  host: 'localhost',
-  port: 5432,
-  database: 'dcweb_db',
-  user: 'dcweb_user',
-  password: 'dcweb_password_2024',
+  connectionString: databaseUrl,
 });
 
 // 创建 Prisma adapter
